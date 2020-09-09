@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
+const NotFoundError = require('./errors/not-found-err');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -59,6 +60,9 @@ app.post('/signup', celebrate({
 
 app.use('/cards', auth, cardsRouter);
 app.use('/users', auth, usersRouter);
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Ресурс не найден'));
+});
 
 app.use(errorLogger);
 app.use(errors());
