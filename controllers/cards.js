@@ -6,7 +6,8 @@ const BadRequestError = require('../errors/bad-req-err');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => (cards === null ? res.status(404).send({ message: 'В базе данных пока нет карточек' }) : res.send({ data: cards })))
+    .orFail(new NotFoundError('В базе данных пока нет карточек'))
+    .then((cards) => res.send({ data: cards }))
     .catch(() => next(new ServerError('Произошла ошибка при получении карточек')));
 };
 

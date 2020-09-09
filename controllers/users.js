@@ -32,7 +32,7 @@ module.exports.createUser = (req, res, next) => {
           email: user.email,
         }))
         .catch((err) => {
-          if (err.errors.email) throw new ConflictError('Пользователь с такими данными уже существует');
+          if (err.code === 11000) throw new ConflictError('Пользователь с такими данными уже существует');
           throw new BadRequestError(`Произошла ошибка при создании пользователя - ${err.message}`);
         });
     })
