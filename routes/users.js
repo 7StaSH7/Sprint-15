@@ -1,6 +1,6 @@
 const usersRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-
+const regexUrl = require('regex-url');
 const NotFoundError = require('../errors/not-found-err');
 
 const {
@@ -10,7 +10,7 @@ const {
 usersRouter.get('/', getUsers);
 usersRouter.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
+    id: Joi.string().alphanum().hex(),
   }),
 }), getSpecificUser);
 
@@ -23,7 +23,7 @@ usersRouter.patch('/me', celebrate({
 
 usersRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri().required(),
+    avatar: Joi.string().required().custom(regexUrl, 'custom url validation'),
   }),
 }), updateAvatar);
 
