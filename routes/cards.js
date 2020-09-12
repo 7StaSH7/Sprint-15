@@ -1,6 +1,6 @@
 const cardsRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const regexUrl = require('regex-url');
+const validator = require('validator');
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
@@ -9,7 +9,9 @@ cardsRouter.get('/', getCards);
 cardsRouter.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().custom(regexUrl, 'custom url validation'),
+    link: Joi.string().required().custom((value) => {
+      validator.isURL(value);
+    }, 'custom url validation'),
   }),
 }), createCard);
 

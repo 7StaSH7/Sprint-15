@@ -1,7 +1,8 @@
 const usersRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const regexUrl = require('regex-url');
+// const validator = require('validator');
 const NotFoundError = require('../errors/not-found-err');
+// const BadRequestError = require('../errors/bad-req-err');
 
 const {
   getUsers, getSpecificUser, updateInfo, updateAvatar,
@@ -23,7 +24,7 @@ usersRouter.patch('/me', celebrate({
 
 usersRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().custom(regexUrl, 'custom url validation'),
+    avatar: Joi.string().required(),
   }),
 }), updateAvatar);
 

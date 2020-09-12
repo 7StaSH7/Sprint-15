@@ -32,11 +32,11 @@ module.exports.createUser = (req, res, next) => {
           email: user.email,
         }))
         .catch((err) => {
-          if (err.code === 11000) throw new ConflictError('Пользователь с такими данными уже существует');
-          throw new BadRequestError(`Произошла ошибка при создании пользователя - ${err.message}`);
+          if (err.name === 'MongoError') throw new ConflictError('Пользователь с такими данными уже существует');
+          next(new BadRequestError(`Произошла ошибка при создании пользователя - ${err.message}`));
         });
     })
-    .catch(() => next(new ServerError('Забыли заполнить пароль!')));
+    .catch(() => next(new ServerError('Произошла ошибка при создании пользователя')));
 };
 
 module.exports.getSpecificUser = (req, res, next) => {
@@ -56,7 +56,10 @@ module.exports.updateInfo = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true,
+    runValidators: true,
+  })
     .orFail(new NotFoundError(`Пользователь с таким id: ${req.params.id} не найден!`))
     .then((user) => res.send({ data: user }))
     .catch((err) => next(new ServerError(`Произошла ошибка при удалении карточки - ${err.message}`)));

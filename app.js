@@ -44,17 +44,17 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required().min(8).replace(/ /g, ''),
   }),
 }), login);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required().min(8).replace(/ /g, ''),
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().uri().required(),
+    avatar: Joi.string().required(),
   }),
 }), createUser);
 
