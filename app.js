@@ -7,9 +7,11 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const validator = require('validator');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-err');
+const BadRequestError = require('./errors/bad-req-err');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -54,7 +56,10 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(8).replace(/ /g, ''),
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().custom((value) => {
+      if (validator.isURL(value)) return value;
+      throw new BadRequestError('Неправильная ссылка');
+    }),
   }),
 }), createUser);
 

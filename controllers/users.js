@@ -32,7 +32,7 @@ module.exports.createUser = (req, res, next) => {
           email: user.email,
         }))
         .catch((err) => {
-          if (err.name === 'MongoError') throw new ConflictError('Пользователь с такими данными уже существует');
+          if (err.name === 'MongoError') next(new ConflictError('Пользователь с такими данными уже существует'));
           next(new BadRequestError(`Произошла ошибка при создании пользователя - ${err.message}`));
         });
     })
